@@ -1,29 +1,37 @@
-require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor@0.27.0/min/vs' }})
+import { $ } from './utils/dom'
+
+require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor@0.27.0/min/vs' } })
 
 require(['vs/editor/editor.main'], () => {
-  const editor = monaco.editor.create(document.getElementById('editor'), {
+  const editor = monaco.editor.create($('#editor'), {
     value: '',
     theme: 'vs-dark',
+    wordWrap: 'on',
     language: 'javascript',
     automaticLayout: true,
-    wordWrap: 'on',
-    wrappingIndent: 'indent'
+    wrappingIndent: 'same'
   })
 
-  const output = document.getElementById('output')
+  const output = $('#output')
 
-  function executeCode() {
+  console.log = function (message) {
+    output.innerHTML += message + '<br>'
+  }
+  console.error = console.warn = console.info = console.debug = console.trace = console.log;
+
+  const executeCode = () => {
     output.innerHTML = ''
+
     try {
       const code = editor.getValue()
       const result = eval(code)
       if (result !== undefined) {
         const lines = result.toString().split(/\r?\n/)
-        output.innerHTML = lines.join('<br>')
+        output.innerHTML = lines.join('<br>') + '<br>'
       }
     } catch (e) {
       const lines = e.toString().split(/\r?\n/)
-      output.innerHTML = lines.join('<br>')
+      output.innerHTML = lines.join('<br>') + '<br>'
     }
   }
 
